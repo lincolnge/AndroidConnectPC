@@ -1,0 +1,13 @@
+<resources>
+	<string name="hello">Hello World, PPTClient!</string>
+    <string name="app_name">AndroidControlPPT</string>
+    <string name="pen">(笔)P</string>
+    <string name="startPPT">播放PPT</string>
+    <string name="escPPT">退出播放</string>
+    <string name="keep">(保留)</string>
+    <string name="delete">(放弃)</string>
+    <string name="specification">(说明书)</string>
+    <string name="action_settings">setting</string>
+    <string name="ToggleButton">(写)W</string>
+
+</resources>

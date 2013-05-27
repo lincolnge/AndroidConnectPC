@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    >
+
+    <LinearLayout
+        android:id="@+id/image"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" 
+        android:layout_weight="1">
+	    
+	    <Button
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:text="@string/startPPT"
+		android:id="@+id/start"
+		/>
+		
+		<Button
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:text="@string/escPPT"
+		android:id="@+id/escape"
+		/>
+	</LinearLayout>
+	
+	<LinearLayout
+	    android:id="@+id/imageView"
+	    android:layout_width="fill_parent"
+	    android:layout_height="fill_parent"
+	    android:orientation="horizontal" 
+		android:layout_weight="15">
+  
+	</LinearLayout>
+
+	<LinearLayout
+	    android:id="@+id/image2"
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:orientation="horizontal" 
+	    android:layout_weight="0">
+		
+		<Button
+		    android:id="@+id/pen"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:text="@string/pen" />
+
+		<Button
+		    android:id="@+id/write"
+		    android:layout_width="wrap_content"
+		    android:layout_height="fill_parent"
+		    android:text="@string/ToggleButton" />
+	
+		<Button
+		    android:id="@+id/K_Button"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:text="@string/keep" />
+
+		<Button
+		    android:id="@+id/D_Button"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:text="@string/delete" />
+
+		<Button
+		    android:id="@+id/specification"
+		    android:layout_width="fill_parent"
+		    android:layout_height="wrap_content"
+		    android:text="@string/specification" />
+
+	 </LinearLayout>
+	 
+</LinearLayout>
