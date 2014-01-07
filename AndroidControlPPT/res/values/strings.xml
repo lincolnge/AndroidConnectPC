@@ -8,6 +8,6 @@
     <string name="delete">(放弃)</string>
     <string name="specification">(说明书)</string>
     <string name="action_settings">setting</string>
-    <string name="ToggleButton">(写)W</string>
+    <string name="write">鼠标左键</string>
 
 </resources>

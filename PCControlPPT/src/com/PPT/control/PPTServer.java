@@ -19,9 +19,10 @@ import java.awt.Dimension;
 public class PPTServer {
 	private final static int RIGHT = 1;
 	private final static int LEFT = 2;
-	private final static int SHIFTF5 = 0;
+	private final static int SHIFTF5 = 8;
 	private final static int ESC = 3;
 	private final static int PEN = 4;
+	private final static int ARROW = 9;
 	private final static int K_BUTTON = 5;
 	private final static int D_BUTTON = 6;
 	private final static int WRITE = 7;
@@ -31,13 +32,13 @@ public class PPTServer {
 	private static ObjectInputStream fromClient;
 	private static ObjectOutputStream fromServer;
 	
-	private Robot robot;//◊‘∂ØªØ∂‘œÛ
-	private Dimension dim; //¥Ê¥¢∆¡ƒª≥ﬂ¥Á
+	private Robot robot;//Ëá™Âä®ÂåñÂØπË±°
+	private Dimension dim; //Â≠òÂÇ®Â±èÂπïÂ∞∫ÂØ∏
 	
-	public static void main(String[] args) throws IOException,
-									ClassNotFoundException, AWTException, InterruptedException{
+	public static void main(String[] args) throws IOException, 
+			ClassNotFoundException, AWTException, InterruptedException{
 		
-		// ’‚“ª∂Œ÷ªƒ‹ªÒ»°µΩ192.168.141.59 æÕ «±æµÿ¡¨Ω”ipµÿ÷∑
+		// Ëøô‰∏ÄÊÆµÂè™ËÉΩËé∑ÂèñÂà∞192.168.141.59 Â∞±ÊòØÊú¨Âú∞ËøûÊé•ipÂú∞ÂùÄ
 		String ip = null;
 		ip = InetAddress.getLocalHost().getHostAddress();
 		System.out.println(ip);
@@ -49,7 +50,7 @@ public class PPTServer {
 		
 		Socket sock = sSocket.accept();
 		System.out.println("recv a connection");
-		                                               
+																									 
 		fromClient = new ObjectInputStream(sock.getInputStream());
 		fromServer = new ObjectOutputStream(sock.getOutputStream());
 
@@ -57,14 +58,14 @@ public class PPTServer {
 		do{
 			try{
 				Choices choice = (Choices)fromClient.readObject();
+				int x = choice.getX();
+				int y = choice.getY();
 				try{
-					int x = choice.getX();
-					int y = choice.getY();
 					boolean press = choice.getPress();
 //					x = (x - 334)/100;
 //					y = (y - 466)/100;
-					x = x/40;
-					y = y/40;
+					x = x/80;
+					y = y/80;
 					System.out.println("x is " + choice.getX());
 					System.out.println("y is " + choice.getY());
 					System.out.println("press is " + choice.getPress());
@@ -76,72 +77,84 @@ public class PPTServer {
 				//choice = (Choices)fromClient.readObject();
 				System.out.println("the flag is " + choice.getKey());
 				key = choice.getKey();
-				switch(key){
-				
-				case SHIFTF5:
-					robot.keyPress(KeyEvent.VK_SHIFT);
-					Thread.sleep(20);
-					robot.keyPress(KeyEvent.VK_F5);
-					Thread.sleep(10);
-					robot.keyRelease(KeyEvent.VK_F5);
-					robot.keyRelease(KeyEvent.VK_SHIFT);
-					Thread.sleep(10);
-					break;
+				if(x == 0 && y == 0){
+					switch(key){
 					
-				case LEFT:
-					robot.keyPress(KeyEvent.VK_LEFT);
-					Thread.sleep(10);
-					robot.keyRelease(KeyEvent.VK_LEFT);
-					Thread.sleep(10);
-					break;
-					
-				case RIGHT:
-					robot.keyPress(KeyEvent.VK_RIGHT);
-					Thread.sleep(10);
-					robot.keyRelease(KeyEvent.VK_RIGHT);
-					Thread.sleep(10);
-					break;
-					
-				case ESC:
-					robot.keyPress(KeyEvent.VK_ESCAPE);
-					Thread.sleep(10);
-					robot.keyPress(KeyEvent.VK_ESCAPE);
-					Thread.sleep(10);
-					break;
-					
-				case PEN:
-					robot.keyPress(KeyEvent.VK_CONTROL);
-					Thread.sleep(20);
-					robot.keyPress(KeyEvent.VK_P);
-					Thread.sleep(10);
-					robot.keyRelease(KeyEvent.VK_P);
-					robot.keyRelease(KeyEvent.VK_CONTROL);
-					Thread.sleep(10);
-					break;
-					
-				case K_BUTTON:
-					robot.keyPress(KeyEvent.VK_K);
-					Thread.sleep(20);
-					robot.keyRelease(KeyEvent.VK_K);
-					Thread.sleep(10);
-					break;
-					
-				case D_BUTTON:
-					robot.keyPress(KeyEvent.VK_D);
-					Thread.sleep(20);
-					robot.keyRelease(KeyEvent.VK_D);
-					Thread.sleep(10);
-					break;
-					
-				case WRITE:
-					robot.keyPress(KeyEvent.VK_D);
-					Thread.sleep(20);
-					robot.keyRelease(KeyEvent.VK_D);
-					Thread.sleep(10);
-					break;
-					
-					default:
+					case SHIFTF5:
+						robot.keyPress(KeyEvent.VK_SHIFT);
+						Thread.sleep(5);
+						robot.keyPress(KeyEvent.VK_F5);
+						Thread.sleep(4);
+						robot.keyRelease(KeyEvent.VK_F5);
+						robot.keyRelease(KeyEvent.VK_SHIFT);
+						Thread.sleep(4);
 						break;
+						
+					case LEFT:
+						robot.keyPress(KeyEvent.VK_LEFT);
+						Thread.sleep(4);
+						robot.keyRelease(KeyEvent.VK_LEFT);
+						Thread.sleep(4);
+						break;
+						
+					case RIGHT:
+						robot.keyPress(KeyEvent.VK_RIGHT);
+						Thread.sleep(4);
+						robot.keyRelease(KeyEvent.VK_RIGHT);
+						Thread.sleep(4);
+						break;
+						
+					case ESC:
+						robot.keyPress(KeyEvent.VK_ESCAPE);
+						Thread.sleep(4);
+						robot.keyPress(KeyEvent.VK_ESCAPE);
+						Thread.sleep(4);
+						break;
+						
+					case PEN:
+						robot.keyPress(KeyEvent.VK_CONTROL);
+						Thread.sleep(5);
+						robot.keyPress(KeyEvent.VK_P);
+						Thread.sleep(4);
+						robot.keyRelease(KeyEvent.VK_P);
+						robot.keyRelease(KeyEvent.VK_CONTROL);
+						Thread.sleep(4);
+						break;
+						
+					case ARROW:
+						robot.keyPress(KeyEvent.VK_CONTROL);
+						Thread.sleep(5);
+						robot.keyPress(KeyEvent.VK_A);
+						Thread.sleep(4);
+						robot.keyRelease(KeyEvent.VK_A);
+						robot.keyRelease(KeyEvent.VK_CONTROL);
+						Thread.sleep(4);
+						break;
+						
+					case K_BUTTON:
+						robot.keyPress(KeyEvent.VK_K);
+						Thread.sleep(5);
+						robot.keyRelease(KeyEvent.VK_K);
+						Thread.sleep(4);
+						break;
+						
+					case D_BUTTON:
+						robot.keyPress(KeyEvent.VK_D);
+						Thread.sleep(5);
+						robot.keyRelease(KeyEvent.VK_D);
+						Thread.sleep(4);
+						break;
+						
+					case WRITE:
+						robot.keyPress(KeyEvent.VK_D);
+						Thread.sleep(5);
+						robot.keyRelease(KeyEvent.VK_D);
+						Thread.sleep(4);
+						break;
+						
+						default:
+							break;
+					}
 				}
 			}
 			catch (Exception e){
@@ -154,23 +167,24 @@ public class PPTServer {
 		fromServer.close();
 		sock.close();
 		sSocket.close();
-		
 	}
 	
 	public PPTServer(){
-        dim = Toolkit.getDefaultToolkit().getScreenSize(); // ªÒµ√∆¡ƒª¥Û–°
-        System.out.println("∆¡ƒª¥Û–°Œ™£∫" + dim.getWidth() + " " + dim.getHeight());
-        try{
-            robot = new Robot();
-        }catch(AWTException e){
-            e.printStackTrace();
-        }
-    }
+		dim = Toolkit.getDefaultToolkit().getScreenSize(); // Ëé∑ÂæóÂ±èÂπïÂ§ßÂ∞è
+		System.out.println("Â±èÂπïÂ§ßÂ∞è‰∏∫Ôºö" + dim.getWidth() + " " + dim.getHeight());
+		try{
+			robot = new Robot();
+		}catch(AWTException e){
+			e.printStackTrace();
+		}
+	}
 	
-	public void Move(int width,int heigh, boolean isPress){    // Û±Í“∆∂Ø∫Ø ˝    
+	public void Move(int width,int heigh, boolean isPress){    //Èº†Ê†áÁßªÂä®ÂáΩÊï∞    
 		System.out.println("enter Move()...");
 		Point mousepoint = MouseInfo.getPointerInfo().getLocation();
-		System.out.println("“∆∂Ø«∞◊¯±Í£∫" + mousepoint.x + " " + mousepoint.y);
+		System.out.println("ÁßªÂä®ÂâçÂùêÊ†áÔºö" + mousepoint.x + " " + mousepoint.y);
+//		width = width/2;
+//		heigh = heigh/2;
 		width += mousepoint.x;
 		heigh += mousepoint.y;
 		try{
@@ -189,7 +203,7 @@ public class PPTServer {
 		else{
 			robot.mouseRelease(InputEvent.BUTTON1_MASK);
 		}
-		System.out.println("“∆∂Ø∫Û◊¯±Í£∫" + width + " " + heigh);
-		//robot.mousePress(InputEvent.BUTTON1_MASK);// Û±Íµ•ª˜
+		System.out.println("ÁßªÂä®ÂêéÂùêÊ†áÔºö" + width + " " + heigh);
+		//robot.mousePress(InputEvent.BUTTON1_MASK);//Èº†Ê†áÂçïÂáª
 		}
 }

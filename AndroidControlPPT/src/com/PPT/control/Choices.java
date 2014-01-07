@@ -1,9 +1,8 @@
- package com.PPT.control;
+package com.PPT.control;
 
 import java.io.Serializable;
 
- 
- public class Choices implements Serializable{
+public class Choices implements Serializable{
 	private int key;
 	private int x;
 	private int y;

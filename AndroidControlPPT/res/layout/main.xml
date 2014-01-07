@@ -31,8 +31,9 @@
 	    android:id="@+id/imageView"
 	    android:layout_width="fill_parent"
 	    android:layout_height="fill_parent"
-	    android:orientation="horizontal" 
-		android:layout_weight="15">
+	    android:layout_weight="15"
+	    android:background="@drawable/touchscreen"
+	    android:orientation="horizontal" >
   
 	</LinearLayout>
 
@@ -43,17 +44,20 @@
 	    android:orientation="horizontal" 
 	    android:layout_weight="0">
 		
-		<Button
+		<ToggleButton
 		    android:id="@+id/pen"
 		    android:layout_width="wrap_content"
-		    android:layout_height="wrap_content"
-		    android:text="@string/pen" />
+		    android:layout_height="fill_parent"
+		    android:text="@string/pen"
+		    android:textOn="@string/pen"          
+            android:textOff="@string/pen"  />
 
-		<Button
+		<ToggleButton
 		    android:id="@+id/write"
 		    android:layout_width="wrap_content"
 		    android:layout_height="fill_parent"
-		    android:text="@string/ToggleButton" />
+		    android:textOn="@string/write"          
+            android:textOff="@string/write"   />
 	
 		<Button
 		    android:id="@+id/K_Button"

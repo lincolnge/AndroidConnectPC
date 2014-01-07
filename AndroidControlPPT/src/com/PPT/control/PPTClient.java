@@ -17,6 +17,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.GestureDetector.OnGestureListener;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;  
 import android.view.MenuItem;  
@@ -24,16 +25,20 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 public class PPTClient extends Activity implements OnTouchListener, OnGestureListener {
+	private Button specification;
 	private Button start;
 	private Button escape;
-	private Button pen;
+	private ToggleButton pen;
+	private ToggleButton write;
 	private Button K_Button;
 	private Button D_Button;
-	private Button write;
 	
 	private Socket sock;
 	private ObjectOutputStream fromClient;
@@ -41,428 +46,372 @@ public class PPTClient extends Activity implements OnTouchListener, OnGestureLis
 	
 	private final static int RIGHT = 1;
 	private final static int LEFT = 2;
-	private final static int SHIFTF5 = 0;
+	private final static int SHIFTF5 = 8;
 	private final static int ESC = 3;
 	private final static int PEN = 4;
 	private final static int K_BUTTON = 5;
 	private final static int D_BUTTON = 6;
 	private final static int WRITE = 7;
+	private final static int ARROW = 9;
 	private boolean press;
 	private boolean first;
 	private boolean isPen = false;
 	
 	GestureDetector mGestureDetector; 
 	private static final int FLING_MIN_DISTANCE = 50;  
-    private static final int FLING_MIN_VELOCITY = 0;
-    
-    private String serverUrl = "192.168.51.1";
-    private int serverPort = 2013;
-    
-    EditTextPreference serverURLIP;
-    /** Called when the activity is first created. */
-    
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);
-        /*        
-        try {
-        	sock = new Socket(InetAddress.getByName(serverUrl),serverPort);
-        	fromClient = new ObjectOutputStream(sock.getOutputStream());
-			fromServer = new ObjectInputStream(sock.getInputStream());
-			
-		} catch (Exception e1) {
-			
-		}
-        */
-        Thread connectPC = new MySendCommondThread();
-        connectPC.start(); 
-  	  	
-        start = (Button)this.findViewById(R.id.start);
-        escape = (Button)this.findViewById(R.id.escape);
-        pen = (Button)this.findViewById(R.id.pen);
-        K_Button = (Button)this.findViewById(R.id.K_Button);
-        D_Button = (Button)this.findViewById(R.id.D_Button);
-        write = (Button)this.findViewById(R.id.write);
-        
-        start.setOnClickListener(new Button.OnClickListener(){
+	private static final int FLING_MIN_VELOCITY = 0;
+	private static final String view = null;
+		
+	private String serverUrl = "192.168.51.1";
+	private int serverPort = 2013;
 
+	EditTextPreference serverURLIP;
+	/** Called when the activity is first created. */
+	
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.main);
+		Thread connectPC = new MySendCommondThread();
+		connectPC.start(); 
+		
+		specification = (Button)this.findViewById(R.id.specification);
+		start = (Button)this.findViewById(R.id.start);
+		escape = (Button)this.findViewById(R.id.escape);
+		pen = (ToggleButton)this.findViewById(R.id.pen);
+		write = (ToggleButton)this.findViewById(R.id.write);
+		K_Button = (Button)this.findViewById(R.id.K_Button);
+		D_Button = (Button)this.findViewById(R.id.D_Button);
+		
+		specification.setOnClickListener(new Button.OnClickListener() {
 			@Override
-			public void onClick(View v) {
+			public void onClick(View view) {
+				/*åˆ›å»ºæ–°Toastå¯¹è±¡*/
+				Toast showImageToast=new Toast(PPTClient.this);
+				/*åˆ›å»ºæ–°ImageViewå¯¹è±¡*/
+				ImageView imageView=new ImageView(PPTClient.this);
+				/*ä»èµ„æºä¸­è·å–å›¾ç‰‡*/
+				imageView.setImageResource(R.drawable.specification);
+				/*è®¾ç½®Toastä¸Šçš„View--(ImageView)*/
+				showImageToast.setView(imageView);
+				/*è®¾ç½®Toastä½ç½®*/
+				showImageToast.setGravity(Gravity.CENTER, 0, 0);
+				/*è®¾ç½®Toastæ˜¾ç¤ºæ—¶é—´*/
+				showImageToast.setDuration(Toast.LENGTH_LONG);
+				/*æ˜¾ç¤ºToast*/
+				showImageToast.show();
+			}
+		});
+			
+		start.setOnClickListener(new Button.OnClickListener() {
+			@Override
+			public void onClick(View view) {
 				Choices choice = new Choices(SHIFTF5);
 				try {
 					fromClient.writeObject(choice);
 					System.out.println("send the start shift + f5");
-				} catch (Exception e) {
-//					e.printStackTrace();
-//					Toast.makeText(this, "error", Toast.LENGTH_SHORT).show();
-				}
+				} catch (Exception e) {}
 			}
-        	
-        });
-        
-        escape.setOnClickListener(new Button.OnClickListener(){
-
+		});
+		
+		escape.setOnClickListener(new Button.OnClickListener(){
 			@Override
 			public void onClick(View arg0) {
 				Choices choice = new Choices(ESC);
 				try {
 					fromClient.writeObject(choice);
 					System.out.println("send the escape");
-				} catch (Exception e) {
-//					e.printStackTrace();
-				}
+				} catch (Exception e) {}
 			}
-        });
-        
-        pen.setOnClickListener(new Button.OnClickListener(){
-
-			@Override
-			public void onClick(View arg0) {
-				Choices  choice = new Choices(PEN);
-				try {
-					fromClient.writeObject(choice);
-					System.out.println("choice the pen");
-				} catch (Exception e) {
-//					e.printStackTrace();
-				}
-				isPen = !isPen;
-			}
-        });
-        
-        write.setOnClickListener(new Button.OnClickListener(){
-			@Override
-			public void onClick(View arg0) {
-				if(first){
-					press = true;
-					first = !first;
-				}
-				else{
-					press = false;
-					first = !first;
-				}
-			}
-        });
-        
-        K_Button.setOnClickListener(new Button.OnClickListener(){
-
-			@Override
-			public void onClick(View arg0) {
-				Choices  choice = new Choices(K_BUTTON);
-				try {
-					fromClient.writeObject(choice);
-					System.out.println("choice (±£Áô)K");
-				} catch (Exception e) {
-//					e.printStackTrace();
-				} 
-			}
-        });
-        
-        D_Button.setOnClickListener(new Button.OnClickListener(){
-
-			@Override
-			public void onClick(View arg0) {
-				Choices  choice = new Choices(D_BUTTON);
-				try {
-					fromClient.writeObject(choice);
-					System.out.println("choice (·ÅÆú)D");
-				} catch (Exception e) {
-//					e.printStackTrace();
-				} 
-			}
-        });
-        
-        mGestureDetector = new GestureDetector(this);  
-        LinearLayout imageview=(LinearLayout)findViewById(R.id.imageView);  
-        imageview.setOnTouchListener(this);  
-        imageview.setLongClickable(true); 
-        
-    }
-    
-    /**
-     * ¼àÌıBACK¼ü
-     * @param keyCode
-     * @param event
-     * @return
-     */
-    public boolean onKeyDown(int keyCode, KeyEvent event) 
-    {	
-		if ( event.getKeyCode() == KeyEvent.KEYCODE_BACK){
-			AlertDialog.Builder builder = new AlertDialog.Builder(this);
-			builder.setTitle("exit app");
-			builder.setMessage("You will exit the app...");
-			//builder.setIcon(R.drawable.stat_sys_warning);
-			builder.setPositiveButton("OK",new DialogInterface.OnClickListener() {
+		});
+			
+			pen.setOnClickListener(new ToggleButton.OnClickListener() {
 				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					Intent startMain = new Intent(Intent.ACTION_MAIN);
-					startMain.addCategory(Intent.CATEGORY_HOME); 
-					startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK); 
-					startActivity(startMain);					
+				public void onClick(View arg0) {
+					Choices  choice = new Choices(PEN);
 					try {
-				        Choices choice = new Choices(-1);
 						fromClient.writeObject(choice);
-					} catch (Exception e) {
-
-					} finally  {
-						// finallyÖĞµÄ´úÂë£¬ÎŞÂÛÒì³£²»Òì³£¶¼»áÖ´ĞĞ¡£
-						// finally×Ó¾äµÄ×÷ÓÃÖ÷ÒªÊÇµ±Å×³öµÄÒì³£Ã»ÓĞ±»²¶»ñÊ±ÓÃÀ´ÊÍ·ÅÄÚ´æ,ºÍ»Ö¸´µ÷ÓÃµÄ×ÊÔ´.
-						// ¾ÍÊÇÖ´ĞĞÁËfinally×Ó¾äÒÔºó,³ÌĞòÒª»Øµ½Å×³öÒì³£µÄµØ·½,¶ø²»ÊÇÖ´ĞĞfinallyºóÃæµÄÓï¾ä.
-			        }
-					System.exit(0);		
-				}
-
+						System.out.println("choice the pen");
+					} catch (Exception e) {}
+					// å½“æŒ‰é’®ç¬¬ä¸€æ¬¡è¢«ç‚¹å‡»æ—¶å€™å“åº”çš„äº‹ä»¶        
+					if (pen.isChecked()) {
+						isPen = true;
+					}   
+					// å½“æŒ‰é’®å†æ¬¡è¢«ç‚¹å‡»æ—¶å€™å“åº”çš„äº‹ä»¶  
+					else {
+						isPen = false;
+						choice = new Choices(ARROW);
+						try {
+							fromClient.writeObject(choice);
+							System.out.println("send the escape");
+						} catch (Exception e) {}
+					}      
+				}  
 			});
-			builder.setNegativeButton("Cancel",new DialogInterface.OnClickListener() {
-				
+	
+			write.setOnClickListener(new ToggleButton.OnClickListener() {
 				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					
+				public void onClick(View arg0) {
+					// å½“æŒ‰é’®ç¬¬ä¸€æ¬¡è¢«ç‚¹å‡»æ—¶å€™å“åº”çš„äº‹ä»¶        
+					if (write.isChecked()) {
+						press = true;
+					}   
+					// å½“æŒ‰é’®å†æ¬¡è¢«ç‚¹å‡»æ—¶å€™å“åº”çš„äº‹ä»¶  
+					else {
+						press = false;
+					}      
 				}
 			});
-			builder.show();
-		}
-		return super.onKeyDown(keyCode, event);
-	}
-    
-    @Override  
-    public boolean onTouch(View v, MotionEvent event) {  
-        // TODO Auto-generated method stub  
-    	Log.i("touch","touch");
-    	/*
-    	// Toast.makeText( this, "Touch Touch", Toast.LENGTH_SHORT).show();
-    	int x = (int) event.getX();
-    	int y = (int) event.getY();
-    	Choices choice = new Choices(x, y);
-    	// Toast.makeText( this, "x:" + x + "y: " + y, Toast.LENGTH_SHORT).show();
-    	try {
-			fromClient.writeObject(choice);
-			Thread.sleep(40);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			// e.printStackTrace();
-			Toast.makeText( this, "error is " + e, Toast.LENGTH_SHORT).show();
-		}
-		*/
-    	return mGestureDetector.onTouchEvent(event);
-    	// return false;
-    }
-    /*
-    public boolean onTouchEvent(MotionEvent event) {	
-    	int x = (int) event.getX();
-    	int y = (int) event.getY();
-    	Choices choice = new Choices(x, y);
-    	Toast.makeText( this, "x:" + x + "y: " + y, Toast.LENGTH_SHORT).show();
-    	try {
-			fromClient.writeObject(choice);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			// e.printStackTrace();
-			Toast.makeText( this, "error is " + e, Toast.LENGTH_SHORT).show();
-		}
-    	return false;
-    }
-    */
-    @Override  
-    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {  
-    	// TODO Auto-generated method stub
-    	/*
-    	int x = (int) (e1.getX() - e2.getX());
-    	int y = (int) (e1.getY() - e2.getY());
-    	System.out.println("e1: " + e1.getX() + ", " + e1.getY());
-    	System.out.println("e2: " + e2.getX() + ", " + e2.getY());
-    	System.out.println("x: " + x + " y: " + y);
-    	Choices choice = new Choices(x, y);
-    	Toast.makeText( this, "x:" + x + "y: " + y, Toast.LENGTH_SHORT).show();
-    	try {
-			fromClient.writeObject(choice);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			// e.printStackTrace();
-			Toast.makeText( this, "error is " + e, Toast.LENGTH_SHORT).show();
-		}
-    	*/
-    	if(!isPen){
-	    	if (e1.getX()-e2.getX() > FLING_MIN_DISTANCE && Math.abs(velocityX) > FLING_MIN_VELOCITY) {   
-	    		// Fling left   
-	    		// Toast.makeText(this, "Ïò×óÊÖÊÆ", Toast.LENGTH_SHORT).show();
-	    		
-	            Choices choice = new Choices(RIGHT);
-				try {
-					fromClient.writeObject(choice);
-					System.out.println("send the right (the next)");
-				} catch (Exception e) {
-					// e.printStackTrace();
-					Toast.makeText(this, "error", Toast.LENGTH_SHORT).show();
-				} finally  {  
-				
+			
+			K_Button.setOnClickListener(new Button.OnClickListener() {
+				@Override
+				public void onClick(View arg0) {
+					Choices  choice = new Choices(K_BUTTON);
+					try {
+						fromClient.writeObject(choice);
+						System.out.println("choice (ä¿ç•™)K");
+					} catch (Exception e) {} 
 				}
-				
-				} else if (e2.getX()-e1.getX() > FLING_MIN_DISTANCE && Math.abs(velocityX) > FLING_MIN_VELOCITY) {   
-				// Fling right   
-				//  Toast.makeText(this, "ÏòÓÒÊÖÊÆ", Toast.LENGTH_SHORT).show();
-				 
-				Choices choice = new Choices(LEFT);
-				try {
-					fromClient.writeObject(choice);
-					System.out.println("send the left (the last)");
-				} catch (Exception e) {
-					// e.printStackTrace();
-					Toast.makeText(this, "error", Toast.LENGTH_SHORT).show();
-				} finally  {  
-				
+			});
+			
+			D_Button.setOnClickListener(new Button.OnClickListener() {
+				@Override
+				public void onClick(View arg0) {
+					Choices  choice = new Choices(D_BUTTON);
+					try {
+						fromClient.writeObject(choice);
+						System.out.println("choice (æ”¾å¼ƒ)D");
+					} catch (Exception e) {}
 				}
-			}
-    	}
-		return false;
-    }  
-
-	@Override
-	public boolean onDown(MotionEvent e) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public void onLongPress(MotionEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX,
-			float distanceY) {
-		// TODO Auto-generated method stub
-		if(isPen){
-			int x = (int) (e2.getX() - e1.getX());
-	    	int y = (int) (e2.getY() - e1.getY());
-	    	// press = false;
-	    	Choices choice = new Choices(x, y, press);
-	    	// Toast.makeText( this, "x:" + x + "y: " + y, Toast.LENGTH_SHORT).show();
-	    	try {
-				fromClient.writeObject(choice);
-				//Thread.sleep(10);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				// e.printStackTrace();
-				Toast.makeText( this, "Scroll error is " + e, Toast.LENGTH_SHORT).show();
-			}
-		}
-		return false;
-	}
-
-	@Override
-	public void onShowPress(MotionEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public boolean onSingleTapUp(MotionEvent e) {
-		// TODO Auto-generated method stub
-		return false;
+			});
+			
+			mGestureDetector = new GestureDetector(this);  
+			LinearLayout imageview=(LinearLayout)findViewById(R.id.imageView);  
+			imageview.setOnTouchListener(this);  
+			imageview.setLongClickable(true); 
 	}
 	
-	//µ±ÎÒÃÇ°´HOME¼üÊ±£¬ÎÒÔÚonPause·½·¨Àï£¬½«ÊäÈëµÄÖµ¸³¸ømString  
-    @Override  
-    protected void onPause() { // Ô­À´ÕâÀïÓ°ÏìÁË ÎÒµÄsetting, ÕÒÁË°ëÌì
-        super.onPause();
-		
-    }
-    
-    @Override
-    public void onStart()//ÖØĞÂÆô¶¯µÄÊ±ºò
-    {
-        super.onStart();
-        Thread connectPC = new MySendCommondThread();
-        connectPC.start(); 
-    }
-    
-    @Override
-    protected void onResume() {
-        super.onResume();
-        // ÔÚÕâÀïµ÷ÓÃÏß³Ì»áÓ°ÏìappµÄ²Ù×÷
-//        Toast.makeText(this, "onResume", Toast.LENGTH_SHORT).show();
-//        Thread connectPC = new MySendCommondThread();
-//        connectPC.start();
-    }
+	/**
+	 * ç›‘å¬BACKé”®
+	 * @param keyCode
+	 * @param event
+	 * @return
+	 */
+	public boolean onKeyDown(int keyCode, KeyEvent event) 
+	{	
+	if ( event.getKeyCode() == KeyEvent.KEYCODE_BACK){
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setTitle("exit app");
+		builder.setMessage("You will exit the app...");
+		//builder.setIcon(R.drawable.stat_sys_warning);
+		builder.setPositiveButton("OK",new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				Intent startMain = new Intent(Intent.ACTION_MAIN);
+				startMain.addCategory(Intent.CATEGORY_HOME); 
+				startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK); 
+				startActivity(startMain);					
+				try {
+							Choices choice = new Choices(-1);
+					fromClient.writeObject(choice);
+				} catch (Exception e) {
 
-    @Override  
-    protected void onStop() {  
-        super.onStop();
-        Choices choice = new Choices(-1);
+				} finally {
+					// finallyä¸­çš„ä»£ç ï¼Œæ— è®ºå¼‚å¸¸ä¸å¼‚å¸¸éƒ½ä¼šæ‰§è¡Œã€‚
+					// finallyå­å¥çš„ä½œç”¨ä¸»è¦æ˜¯å½“æŠ›å‡ºçš„å¼‚å¸¸æ²¡æœ‰è¢«æ•è·æ—¶ç”¨æ¥é‡Šæ”¾å†…å­˜,å’Œæ¢å¤è°ƒç”¨çš„èµ„æº.
+					// å°±æ˜¯æ‰§è¡Œäº†finallyå­å¥ä»¥å,ç¨‹åºè¦å›åˆ°æŠ›å‡ºå¼‚å¸¸çš„åœ°æ–¹,è€Œä¸æ˜¯æ‰§è¡Œfinallyåé¢çš„è¯­å¥.
+				}
+				System.exit(0);		
+			}
+
+		});
+		builder.setNegativeButton("Cancel",new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {}
+		});
+		builder.show();
+	}
+	return super.onKeyDown(keyCode, event);
+}
+	
+@Override  
+public boolean onTouch(View v, MotionEvent event) {  
+	Log.i("touch","touch");
+	return mGestureDetector.onTouchEvent(event);
+	// return false;
+}
+
+public boolean onTouchEvent(MotionEvent event) {
+	return false;
+}
+
+@Override  
+public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {  
+	if(!isPen){
+		if (e1.getX()-e2.getX() > FLING_MIN_DISTANCE && Math.abs(velocityX) > FLING_MIN_VELOCITY) {   
+			// Fling left   
+			// Toast.makeText(this, "å‘å·¦æ‰‹åŠ¿", Toast.LENGTH_SHORT).show();
+			Choices choice = new Choices(RIGHT);
+			try {
+				fromClient.writeObject(choice);
+				System.out.println("send the right (the next)");
+			} catch (Exception e) {} 
+			finally {}
+		} else if (e2.getX()-e1.getX() > FLING_MIN_DISTANCE && Math.abs(velocityX) > FLING_MIN_VELOCITY) {   
+			// Fling right   
+			//  Toast.makeText(this, "å‘å³æ‰‹åŠ¿", Toast.LENGTH_SHORT).show();
+			Choices choice = new Choices(LEFT);
+			try {
+				fromClient.writeObject(choice);
+				System.out.println("send the left (the last)");
+			} catch (Exception e) {} 
+			finally  {}
+		}
+	}
+	return false;
+}  
+
+@Override
+public boolean onDown(MotionEvent e) {
+	// TODO Auto-generated method stub
+	return false;
+}
+
+@Override
+public void onLongPress(MotionEvent e) {
+	// TODO Auto-generated method stub
+}
+
+@Override
+public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX,
+		float distanceY) {
+	// TODO Auto-generated method stub
+	if(isPen){
+		int x = (int) (e2.getX() - e1.getX());
+		int y = (int) (e2.getY() - e1.getY());
+		// press = false;
+		Choices choice = new Choices(x, y, press);
+		// Toast.makeText( this, "x:" + x + "y: " + y, Toast.LENGTH_SHORT).show();
 		try {
 			fromClient.writeObject(choice);
+			//Thread.sleep(10);
+			//Thread.sleep(300);
 		} catch (Exception e) {
-//			e.printStackTrace();
-			Toast.makeText(this, "stop" + e.toString(), Toast.LENGTH_SHORT).show();
+			// TODO Auto-generated catch block
+			// e.printStackTrace();
+			// Toast.makeText( this, "Scroll error is " + e, Toast.LENGTH_SHORT).show();
 		}
-//        Thread connectPC = new MySendCommondThread();
-//        connectPC.interrupt();
-//        connectPC = null;
-    }
-    
-    /**·¢ËÍÃüÁîÏß³Ì*/
-    class MySendCommondThread extends Thread{
-    	public void run(){
-    		
-    		//¶ÁÈ¡ÅäÖÃÎÄ¼ş
-            SharedPreferences preParas = PreferenceManager.getDefaultSharedPreferences(PPTClient.this);
-            serverUrl = preParas.getString("ServerUrl", "192.168.51.1");
-        	String tempStr = preParas.getString("ServerPort", "2013");
-        	serverPort = Integer.parseInt(tempStr);
-        	
-    		//ÊµÀı»¯Socket
-    		try {
-            	sock = new Socket(InetAddress.getByName(serverUrl),serverPort);
-            	fromClient = new ObjectOutputStream(sock.getOutputStream());
-    			fromServer = new ObjectInputStream(sock.getInputStream());
-    		} catch (Exception e1) {
-    			
-    		} 
-    	}
-    }
-    
-    public static final int SET = Menu.FIRST;  
-    public static final int EXIT = Menu.FIRST+1;  
-        
-    //´´½¨Menu²Ëµ¥  
-    @Override  
-    public boolean onCreateOptionsMenu(Menu menu) {  
-        menu.add(0,SET,0,"ÉèÖÃ");  
-        menu.add(0,EXIT,0,"ÍË³ö");  
-        return super.onCreateOptionsMenu(menu);  
-    }  
-  
-    //µã»÷Menu²Ëµ¥Ñ¡ÏîÏìÓ¦ÊÂ¼ş   
-    @Override  
-    public boolean onOptionsItemSelected(MenuItem item) {
-    	super.onOptionsItemSelected(item);//»ñÈ¡²Ëµ¥
-        switch(item.getItemId()){  
-	        case 1:
-	        {
-        		Intent intent = new Intent(this, SettingActivity.class);
-	        	try{
+	}
+	return false;
+}
+
+@Override
+public void onShowPress(MotionEvent e) {
+	// TODO Auto-generated method stub
+}
+
+@Override
+public boolean onSingleTapUp(MotionEvent e) {
+	// TODO Auto-generated method stub
+	return false;
+}
+
+//å½“æˆ‘ä»¬æŒ‰HOMEé”®æ—¶ï¼Œæˆ‘åœ¨onPauseæ–¹æ³•é‡Œï¼Œå°†è¾“å…¥çš„å€¼èµ‹ç»™mString  
+	@Override  
+	protected void onPause() { // åŸæ¥è¿™é‡Œå½±å“äº† æˆ‘çš„setting, æ‰¾äº†åŠå¤©
+		super.onPause();
+	}
+	
+	@Override
+	public void onStart()//é‡æ–°å¯åŠ¨çš„æ—¶å€™
+	{
+		super.onStart();
+		Thread connectPC = new MySendCommondThread();
+		connectPC.start(); 
+	}
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		// åœ¨è¿™é‡Œè°ƒç”¨çº¿ç¨‹ä¼šå½±å“appçš„æ“ä½œ
+		// Toast.makeText(this, "onResume", Toast.LENGTH_SHORT).show();
+		// Thread connectPC = new MySendCommondThread();
+		// connectPC.start();
+	}
+
+	@Override  
+	protected void onStop() {  
+		super.onStop();
+		Choices choice = new Choices(-1);
+		try {
+			fromClient.writeObject(choice);
+		} catch (Exception e) {}
+			// Thread connectPC = new MySendCommondThread();
+			// connectPC.interrupt();
+			// connectPC = null;
+	}
+	
+	/**å‘é€å‘½ä»¤çº¿ç¨‹*/
+	class MySendCommondThread extends Thread{
+		public void run(){
+			
+			//è¯»å–é…ç½®æ–‡ä»¶
+			SharedPreferences preParas = PreferenceManager.getDefaultSharedPreferences(PPTClient.this);
+			serverUrl = preParas.getString("ServerUrl", "192.168.51.1");
+			String tempStr = preParas.getString("ServerPort", "2013");
+			serverPort = Integer.parseInt(tempStr);
+				
+			//å®ä¾‹åŒ–Socket
+			try {
+				sock = new Socket(InetAddress.getByName(serverUrl),serverPort);
+				fromClient = new ObjectOutputStream(sock.getOutputStream());
+				fromServer = new ObjectInputStream(sock.getInputStream());
+			} catch (Exception e1) {
+				
+			} 
+		}
+	}
+	
+	public static final int SET = Menu.FIRST;  
+	public static final int EXIT = Menu.FIRST+1;  
+			
+	//åˆ›å»ºMenuèœå•  
+	@Override  
+	public boolean onCreateOptionsMenu(Menu menu) {  
+		menu.add(0,SET,0,"è®¾ç½®");  
+		menu.add(0,EXIT,0,"é€€å‡º");  
+		return super.onCreateOptionsMenu(menu);  
+	}  
+
+	//ç‚¹å‡»Menuèœå•é€‰é¡¹å“åº”äº‹ä»¶   
+	@Override  
+	public boolean onOptionsItemSelected(MenuItem item) {
+		super.onOptionsItemSelected(item);//è·å–èœå•
+		switch(item.getItemId()) {  
+			case 1:
+			{
+				Intent intent = new Intent(this, SettingActivity.class);
+				try{
 					startActivity(intent);
-	        	} catch(Exception e){
-	        		Toast.makeText(this, "option error1" + e.toString(), Toast.LENGTH_SHORT).show();
-	        		Log.e("MYAPP", "exception: " + e.toString());
-	        	} catch(Error e2){
-	        		Toast.makeText(this, e2.toString(), Toast.LENGTH_SHORT).show();
-	        		Log.e("MYAPP", "exception: " + e2.toString());
-	        	}
-	            break;
-	        }
-	        case 2:{
-	        	try{
-	        		//É±µôÏß³ÌÇ¿ÖÆÍË³ö
+				} catch(Exception e) {
+					// Toast.makeText(this, "option error1" + e.toString(), Toast.LENGTH_SHORT).show();
+					Log.e("MYAPP", "exception: " + e.toString());
+				} catch(Error e2) {
+					Toast.makeText(this, e2.toString(), Toast.LENGTH_SHORT).show();
+					Log.e("MYAPP", "exception: " + e2.toString());
+				}
+				break;
+			}
+			case 2:{
+				try{
+					//æ€æ‰çº¿ç¨‹å¼ºåˆ¶é€€å‡º
 					android.os.Process.killProcess(android.os.Process.myPid());
-	        	} catch(Exception e){
-	        		
-	        	}
-	            break;  
-        	}  
-        }
-        return true;  
-    }  
+				} catch(Exception e) {
+					
+				}
+				break;
+			}
+		}
+		return true;
+	}  
 }

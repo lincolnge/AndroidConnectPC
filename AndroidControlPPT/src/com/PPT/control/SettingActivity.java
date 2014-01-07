@@ -7,12 +7,12 @@ import android.preference.PreferenceActivity;
  * 
  */
 public class SettingActivity extends PreferenceActivity {
-    
+		
 	@Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-          
-        //从xml文件中初始该SharedPreferences  
-        addPreferencesFromResource(R.xml.setting);
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+			
+		//浠巟ml鏂囦欢涓垵濮嬭SharedPreferences  
+		addPreferencesFromResource(R.xml.setting);
 	}
 }
